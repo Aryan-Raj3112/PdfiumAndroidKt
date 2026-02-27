@@ -1355,6 +1355,52 @@ Java_io_legere_pdfiumandroid_PdfPage_nativeGetPageMatrix(JNIEnv *env, jclass,
 }
 
 extern "C"
+JNIEXPORT jfloatArray JNICALL
+Java_io_legere_pdfiumandroid_PdfPage_nativeGetPageObjectsInformation(JNIEnv *env, jclass, jlong page_ptr) {
+    try {
+        auto page = reinterpret_cast<FPDF_PAGE>(page_ptr);
+        if (page == nullptr) return nullptr;
+
+        int count = FPDFPage_CountObjects(page);
+        if (count <= 0) return nullptr;
+
+        // 5 floats per object: type, left, top, right, bottom
+        std::vector<float> data;
+        data.reserve(count * 5);
+
+        for (int i = 0; i < count; i++) {
+            FPDF_PAGEOBJECT pageObject = FPDFPage_GetObject(page, i);
+            if (pageObject == nullptr) continue;
+
+            int type = FPDFPageObj_GetType(pageObject);
+            float left, bottom, right, top;
+
+            // FPDFPageObj_GetBounds fills: left, bottom, right, top
+            if (FPDFPageObj_GetBounds(pageObject, &left, &bottom, &right, &top)) {
+                data.push_back((float)type);
+                data.push_back(left);
+                data.push_back(top);    // Store as 'top' for RectF constructor
+                data.push_back(right);
+                data.push_back(bottom); // Store as 'bottom' for RectF constructor
+            }
+        }
+
+        if (data.empty()) return nullptr;
+
+        jfloatArray result = env->NewFloatArray((jsize)data.size());
+        if (result == nullptr) return nullptr;
+
+        env->SetFloatArrayRegion(result, 0, (jsize)data.size(), data.data());
+        return result;
+
+    } catch (std::bad_alloc &e) {
+        raise_java_oom_exception(env, e);
+    } catch (...) {
+        return nullptr;
+    }
+}
+
+extern "C"
 JNIEXPORT jboolean JNICALL
 Java_io_legere_pdfiumandroid_PdfPage_nativeLockSurface(JNIEnv *env, jclass clazz, jobject surface, jintArray widthHeightArray, jlongArray ptrsArray) {
     LOGD("nativeLockSurface");
@@ -3439,6 +3485,7 @@ static const JNINativeMethod pageMethods[] = {
         {"nativeGetPageArtBox",              "(J)[F",                                  (void *) Java_io_legere_pdfiumandroid_PdfPage_nativeGetPageArtBox},
         {"nativeGetPageBoundingBox",         "(J)[F",                                  (void *) Java_io_legere_pdfiumandroid_PdfPage_nativeGetPageBoundingBox},
         {"nativeGetPageMatrix",              "(J)[F",                                  (void *) Java_io_legere_pdfiumandroid_PdfPage_nativeGetPageMatrix},
+        {"nativeGetPageObjectsInformation",  "(J)[F",                                  (void *) Java_io_legere_pdfiumandroid_PdfPage_nativeGetPageObjectsInformation},
 };
 
 

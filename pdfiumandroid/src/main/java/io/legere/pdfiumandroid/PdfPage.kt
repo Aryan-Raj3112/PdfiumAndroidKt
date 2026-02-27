@@ -746,6 +746,38 @@ class PdfPage(
         }
     }
 
+    /**
+     * Get all page objects (Images, Paths, Text, etc) with their bounding boxes.
+     * Useful for identifying regions to exclude from dark mode filters.
+     */
+    fun getPageObjects(): List<PdfPageObject> {
+        synchronized(PdfiumCore.lock) {
+            if (handleAlreadyClosed(isClosed || doc.isClosed)) return emptyList()
+            // Returns flat array: [type, left, top, right, bottom, type, ...]
+            val rawData = nativeGetPageObjectsInformation(pagePtr) ?: return emptyList()
+
+            val objects = mutableListOf<PdfPageObject>()
+            val step = 5
+            for (i in rawData.indices step step) {
+                if (i + 4 < rawData.size) {
+                    val typeInt = rawData[i].toInt()
+                    // Create RectF with PDF coordinates (Left, Top, Right, Bottom)
+                    // Note: In PDF coords, Top is numerically > Bottom.
+                    // We store them as-is; mapRectToDevice will handle the coordinate transformation later.
+                    val bounds = RectF(rawData[i+1], rawData[i+2], rawData[i+3], rawData[i+4])
+
+                    objects.add(
+                        PdfPageObject(
+                            type = PdfPageObjectType.fromInt(typeInt),
+                            bounds = bounds
+                        )
+                    )
+                }
+            }
+            return objects
+        }
+    }
+
     companion object {
         private const val TAG = "PdfPage"
 
@@ -767,6 +799,9 @@ class PdfPage(
             synchronized(PdfiumCore.lock) {
                 nativeUnlockSurface(ptrs)
             }
+
+        @JvmStatic
+        private external fun nativeGetPageObjectsInformation(pagePtr: Long): FloatArray?
 
         @JvmStatic
         private external fun nativeClosePage(pagePtr: Long)
@@ -978,3 +1013,18 @@ class PdfPage(
         private external fun nativeGetPageMatrix(pagePtr: Long): FloatArray
     }
 }
+
+enum class PdfPageObjectType(val value: Int) {
+    UNKNOWN(0),
+    TEXT(1),
+    PATH(2),
+    IMAGE(3),
+    SHADING(4),
+    FORM(5);
+
+    companion object {
+        fun fromInt(value: Int) = values().firstOrNull { it.value == value } ?: UNKNOWN
+    }
+}
+
+data class PdfPageObject(val type: PdfPageObjectType, val bounds: RectF)

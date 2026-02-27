@@ -13,6 +13,7 @@ import androidx.annotation.Keep
 import io.legere.pdfiumandroid.Logger
 import io.legere.pdfiumandroid.PdfDocument
 import io.legere.pdfiumandroid.PdfPage
+import io.legere.pdfiumandroid.PdfPageObject
 import io.legere.pdfiumandroid.PdfiumCore
 import io.legere.pdfiumandroid.util.Size
 import kotlinx.coroutines.CoroutineDispatcher
@@ -307,6 +308,14 @@ class PdfPageKt(
     suspend fun getPageLinks(): List<PdfDocument.Link> =
         withContext(dispatcher) {
             page.getPageLinks()
+        }
+
+    /**
+     * suspend version of [PdfPage.getPageObjects]
+     */
+    suspend fun getPageObjects(): List<PdfPageObject> =
+        withContext(dispatcher) {
+            page.getPageObjects()
         }
 
     /**
