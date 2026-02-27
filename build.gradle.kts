@@ -10,9 +10,5 @@ plugins {
     alias(libs.plugins.detekt) apply false
     alias(libs.plugins.ktlint)
     alias(libs.plugins.jreleaser) apply false
+    alias(libs.plugins.benchmark) apply false
 }
-
-// allprojects {
-//    version = findProperty('VERSION_NAME') ?: "1.0.0"
-//    group = findProperty('GROUP') ?: "io.legere"
-// }

@@ -1,14 +1,14 @@
 [versions]
-kotlin-stdlib = "2.2.20"
-kotlin_version = "2.2.20"
-ksp_version = "2.2.20-2.0.3"
+kotlin-stdlib = "2.2.21"
+kotlin_version = "2.2.21"
+ksp_version = "2.3.0"
 hilt_version = "2.57.2"
-gradleplugin = "8.12.3"
+gradleplugin = "8.13.1"
 detekt_version = "1.23.8"
-kover_version = "0.9.2"
-ktlint_version = "13.1.0"
+kover_version = "0.9.3"
+ktlint_version = "14.0.1"
 activity-compose = "1.11.0"
-compose-bom = "2025.09.01"
+compose-bom = "2025.11.00"
 androidx-junit = "1.3.0"
 appcompat = "1.7.1"
 coil-compose = "2.7.0"
@@ -23,10 +23,13 @@ lifecycle-runtime-ktx = "2.9.4"
 material = "1.13.0"
 timber = "5.0.1"
 truth = "1.4.5"
-arrow = "2.1.2"
+arrow = "2.2.0"
 annotation-jvm = "1.9.1"
 jreleaser = "1.20.0"
 runner = "1.7.0"
+guava = "33.5.0-android"
+benchmark = "1.2.4"
+benchmark-junit4 = "1.4.1"
 
 [libraries]
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
@@ -59,13 +62,15 @@ arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 arrow-fx-coroutines = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref = "arrow" }
 androidx-annotation-jvm = { group = "androidx.annotation", name = "annotation-jvm", version.ref = "annotation-jvm" }
 androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
+androidx-benchmark-junit4 = { group = "androidx.benchmark", name = "benchmark-junit4", version.ref = "benchmark-junit4" }
 
 [bundles]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "gradleplugin" }
 android-library = { id = "com.android.library", version.ref = "gradleplugin" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin_version" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version = "2.2.0" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt_version" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp_version" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin_version" }
@@ -73,3 +78,4 @@ detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt_version" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover_version" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint_version" }
 jreleaser = { id = "org.jreleaser", version.ref = "jreleaser" }
+benchmark = { id = "androidx.benchmark", version.ref = "benchmark" }
