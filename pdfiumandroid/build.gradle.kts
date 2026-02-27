@@ -105,32 +105,33 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "io.legere"
             artifactId = "pdfiumandroid"
-            version = project.property("VERSION_NAME") as String
+            version = project.findProperty("VERSION_NAME") as? String ?: "v1.0.35-custom"
 
             pom {
                 name.set("pdfiumandroid")
-//                packaging = rootProject.properties["POM_PACKAGING"] as String
-                description = rootProject.properties["POM_DESCRIPTION"] as String
-                url.set(rootProject.properties["POM_URL"] as String)
+                description.set(project.findProperty("POM_DESCRIPTION") as? String ?: "Pdfium Android Library")
+                url.set(project.findProperty("POM_URL") as? String ?: "https://github.com/Aryan-Raj3112/PdfiumAndroidKt")
+                
                 licenses {
                     license {
-                        name.set(rootProject.properties["POM_LICENCE_NAME"] as String)
-                        url.set(rootProject.properties["POM_LICENCE_URL"] as String)
-                        distribution.set(rootProject.properties["POM_LICENCE_DIST"] as String)
+                        name.set(project.findProperty("POM_LICENCE_NAME") as? String ?: "The Apache License, Version 2.0")
+                        url.set(project.findProperty("POM_LICENCE_URL") as? String ?: "http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        distribution.set(project.findProperty("POM_LICENCE_DIST") as? String ?: "repo")
                     }
                 }
                 developers {
                     developer {
-                        id.set(rootProject.properties["POM_DEVELOPER_ID"] as String)
-                        name.set(rootProject.properties["POM_DEVELOPER_NAME"] as String)
+                        id.set(project.findProperty("POM_DEVELOPER_ID") as? String ?: "aryan")
+                        name.set(project.findProperty("POM_DEVELOPER_NAME") as? String ?: "Aryan")
                     }
                 }
                 scm {
-                    connection.set(rootProject.properties["POM_SCM_CONNECTION"] as String)
-                    developerConnection.set(rootProject.properties["POM_SCM_DEV_CONNECTION"] as String)
-                    url.set(rootProject.properties["POM_SCM_URL"] as String)
+                    connection.set(project.findProperty("POM_SCM_CONNECTION") as? String ?: "")
+                    developerConnection.set(project.findProperty("POM_SCM_DEV_CONNECTION") as? String ?: "")
+                    url.set(project.findProperty("POM_SCM_URL") as? String ?: "")
                 }
             }
+            
             afterEvaluate {
                 from(components["release"])
             }
